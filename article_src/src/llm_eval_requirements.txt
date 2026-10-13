@@ -1,0 +1,12 @@
+torch<2.5.0
+transformers
+wandb
+accelerate
+evaluate
+numpy
+packaging
+unsloth
+python-dotenv
+openai
+evaluate
+scikit-learn==1.3.2

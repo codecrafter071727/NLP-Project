@@ -1,0 +1,19 @@
+# In a Python 3.11 environment
+nltk
+# pip install torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+wandb
+datasets
+evaluate
+torchmetrics
+scipy
+poutyne
+scikit-learn
+accelerate
+transformers==4.40.0 # 4.41.0 breaks QuestEval T5 model that has no BOS and EOS tokens
+# Install a modified version of the LENS codebase by fixing PyPi broken build
+# with sentence-transformers (torch version), sentencepiece and Pandas.
+git+https://github.com/davebulaval/LENS
+
+# Install a modified version of the QuestEval codebase by fixing PyPi broken build
+# with SpaCy.
+git+https://github.com/davebulaval/QuestEval

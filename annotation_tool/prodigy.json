@@ -1,0 +1,19 @@
+{
+  "buttons": [
+    "accept"
+  ],
+  "port": 8080,
+  "host": "*",
+  "feed_overlap": true,
+  "batch_size": 10,
+  "history_size": 10,
+  "allow_work_stealing": false,
+  "ui_lang": "fr",
+  "cardMinWidth": 675,
+  "custom_theme": {
+    "cardMaxWidth": 1500
+  },
+  "total_examples_target": 50,
+  "global_css": ".prodigy-content { text-align: left }",
+  "instructions": "./instructions.html"
+}

@@ -1,0 +1,9 @@
+{
+    "prompt_prefix": "Réécris la phrase complexe à l'aide d'une ou plusieurs phrases simples. Conserve le même sens, mais simplifie-le. RÉPONDS EN FRANÇAIS!",
+    "prompt_suffix": "Complexe : {input}\nSimple :",
+    "prompt_template": "Complexe: {complex}\nSimple: {simple}",
+    "example_separator": "\n\n",
+    "prompt_format": "prefix_initial",
+    "source_field": "complex",
+    "target_field": "simple"
+}
