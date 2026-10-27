@@ -11,7 +11,7 @@ def compute_metrics(eval_pred):
     Function to compute various metric during training.
     """
     predictions, labels = eval_pred
-    rmse = mean_squared_error(labels, predictions, squared=False)
+    rmse = mean_squared_error(labels, predictions) ** 0.5
     r_squared = r2_metric.compute(predictions=predictions, references=labels)
     pearson_corr = pearsonr_metric.compute(
         predictions=predictions, references=labels, return_pvalue=True
@@ -38,7 +38,7 @@ def eval_compute_metrics_identical(eval_pred):
     See here for compute details https://huggingface.co/spaces/evaluate-metric/r_squared/edit/main/r_squared.py.
     """
     predictions, labels = eval_pred
-    rmse = mean_squared_error(labels, predictions, squared=False)
+    rmse = mean_squared_error(labels, predictions) ** 0.5
     mean_score = predictions.mean()
     st_dev_score = predictions.std()
 
@@ -72,7 +72,7 @@ def eval_compute_metrics_unrelated(eval_pred):
     See here for compute details https://huggingface.co/spaces/evaluate-metric/r_squared/edit/main/r_squared.py.
     """
     predictions, labels = eval_pred
-    rmse = mean_squared_error(labels, predictions, squared=False)
+    rmse = mean_squared_error(labels, predictions) ** 0.5
     mean_score = predictions.mean()
     st_dev_score = predictions.std()
 

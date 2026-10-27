@@ -1,0 +1,62 @@
+RQ2 official evaluation
+
+Protocol
+The ridge model is trained only on train_FrJUDGE.jsonl.
+Dev, test, and both holdouts are scored after training.
+The identical holdout is the original sentence copied as its own simplification, so every human label is 10.
+The unrelated holdout pairs each original with an unrelated simplification, so every human label is 0.
+Correlation is undefined when the human labels do not vary. Error is the measure on those holdouts.
+
+Trained ridge model
+System                    n  miss    MAE          95% CI   RMSE       r       p
+Test                     90     0   1.57  [1.35, 1.82]   1.95   0.626  <0.001
+Dev check                21     0   1.73  [1.34, 2.11]   1.97   0.728  <0.001
+Identical holdout       297     0   1.21  [1.21, 1.21]   1.21     n/a     n/a
+Unrelated holdout       297     0   5.32  [5.09, 5.55]   5.69     n/a     n/a
+
+Feature weights
+  jaccard                1.123
+  coverage               1.630
+  precision             -1.192
+  length_ratio           4.493
+  simp/orig length       0.857
+  intercept              1.878
+
+On the holdouts, the trained model predicts 8.79 for an identical pair and 5.32 for an unrelated pair. The human labels are 10 and 0.
+Every identical pair has the same overlap features, so the model assigns them one score and the error interval is a single number.
+The unrelated error stays large because shared words still produce a mid-scale score. The model ranks identical pairs above unrelated pairs, and it does not push unrelated pairs down to 0.
+
+Partial prompt run: first 2 test rows only. Not the official result.
+
+Prompt comparison on the official test split
+Judge: C:\Users\anshu\.cache\rq2\Qwen2.5-0.5B-Instruct
+Each test pair is scored three times. Only the prompt text changes.
+A reply with no integer from 0 to 10 is missing and is left out of that row's error.
+System                    n  miss    MAE          95% CI   RMSE       r       p
+Short French              2     0   1.60  [1.20, 2.00]   1.65     n/a     n/a
+Short English             2     0   3.60  [1.20, 6.00]   4.33     n/a     n/a
+Long French               2     0   1.60  [1.00, 2.20]   1.71     n/a     n/a
+Ridge on these rows       2     0   1.07  [0.01, 2.13]   1.51     n/a     n/a
+
+Lowest test error among reliable prompts: Short French (MAE 1.60, 95% CI [1.20, 2.00], Pearson n/a).
+The Short French and Short English error intervals overlap, so this test run does not separate them.
+The Short French and Long French error intervals overlap, so this test run does not separate them.
+The best prompt and the trained ridge model have overlapping test-error intervals.
+
+Highest test label
+  label=9.0
+  ridge=6.87
+  original: De plus, les garanties du contrat d’assurance ne peuvent pas être transférées sur un autre véhicule. Si l’assuré désigné change de véhicule, le contrat d’assurance prend fin.
+  simplification: Les garanties du contrat d'assurance sont liées à un véhicule spécifique. Si l'assuré change de véhicule, le contrat d'assurance prend fin.
+  Short French: 7
+  Short English: 3
+  Long French: 8
+
+Lowest test label
+  label=5.8
+  ridge=5.79
+  original: Lorsque la garantie principale s’applique, le chapitre A inclut les garanties additionnelles suivantes : 4.2 Prise en charge de certains frais liés à une poursuite Lorsqu’une personne assurée est poursuivie, l’assureur prend en charge : les frais et les dépens qui découlent de cette poursuite; et les intérêts sur le montant d’assurance.
+  simplification: La garantie principale comprend des garanties additionnelles sous le chapitre A. Ces garanties couvrent les frais et dépens d'une poursuite judiciaire contre une personne assurée. Elles incluent aussi les intérêts sur le montant d’assurance.
+  Short French: 7
+  Short English: 7
+  Long French: 8

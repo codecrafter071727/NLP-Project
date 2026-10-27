@@ -139,13 +139,14 @@ trainer.train()
 
 trainer.save_model()
 
-wandb.run.config.update(
-    {
-        "data_augmentation": f"{str(data_augmentation)} {num_epoch} holdout fixed",
-        "tag": f"legal_meaning_bert_train_{checkpoint}",
-    }
-)
-wandb.log({"Best model checkpoint path": trainer.state.best_model_checkpoint})
+if wandb.run is not None:
+    wandb.run.config.update(
+        {
+            "data_augmentation": f"{str(data_augmentation)} {num_epoch} holdout fixed",
+            "tag": f"legal_meaning_bert_train_{checkpoint}",
+        }
+    )
+    wandb.log({"Best model checkpoint path": trainer.state.best_model_checkpoint})
 
 print("----------Test Set Evaluation start----------")
 trainer.evaluate(

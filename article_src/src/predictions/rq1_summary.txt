@@ -1,0 +1,41 @@
+RQ1 official evaluation
+
+Protocol
+Rows are read from datastore/frjudge.csv.
+Each row stores an original sentence, a simplification, and a human rating.
+It does not store age, gender, birth region, education, English proficiency, or LLM experience.
+Each characteristic is measured from the original sentence only.
+Each formulation measure describes the simplification.
+Correlations are estimated on the training split (n=186) and checked on the test split (n=90).
+A link is reliable when the two correlations have the same sign and the test p-value is below 0.0025.
+That threshold is 0.05 divided by the number of characteristic-formulation pairs, the Bonferroni correction.
+The identical and unrelated holdouts are not used: their simplifications were constructed, not written from the source sentence.
+
+Characteristic           Formulation                 train r   test r   test p   reliable
+source_words             simplification_words          0.752    0.849   <0.001        yes
+source_words             simplification_sentences      0.243    0.664   <0.001        yes
+source_words             words_kept                   -0.537   -0.467   <0.001        yes
+source_words             shorter_words                -0.060   -0.009    0.933         no
+source_sentences         simplification_words          0.379    0.455   <0.001        yes
+source_sentences         simplification_sentences      0.646    0.886   <0.001        yes
+source_sentences         words_kept                   -0.302   -0.271    0.010         no
+source_sentences         shorter_words                 0.098    0.152    0.152         no
+source_word_length       simplification_words         -0.170   -0.293    0.005         no
+source_word_length       simplification_sentences     -0.160   -0.072    0.502         no
+source_word_length       words_kept                    0.011    0.214    0.043         no
+source_word_length       shorter_words                 0.279    0.285    0.007         no
+source_long_word_share   simplification_words         -0.067   -0.311    0.003         no
+source_long_word_share   simplification_sentences     -0.076   -0.108    0.313         no
+source_long_word_share   words_kept                   -0.011    0.257    0.014         no
+source_long_word_share   shorter_words                 0.259    0.244    0.021         no
+source_comma_rate        simplification_words          0.168    0.264    0.012         no
+source_comma_rate        simplification_sentences     -0.134   -0.100    0.350         no
+source_comma_rate        words_kept                   -0.046   -0.120    0.261         no
+source_comma_rate        shorter_words                -0.130   -0.249    0.018         no
+
+Reliable links: 5 of 20.
+  A higher source_words goes with a higher simplification_words (test r 0.849, p <0.001).
+  A higher source_words goes with a higher simplification_sentences (test r 0.664, p <0.001).
+  A higher source_words goes with a lower words_kept (test r -0.467, p <0.001).
+  A higher source_sentences goes with a higher simplification_words (test r 0.455, p <0.001).
+  A higher source_sentences goes with a higher simplification_sentences (test r 0.886, p <0.001).

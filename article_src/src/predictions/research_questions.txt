@@ -1,0 +1,280 @@
+RQ1 official evaluation
+
+Protocol
+Rows are read from datastore/frjudge.csv.
+Each row stores an original sentence, a simplification, and a human rating.
+It does not store age, gender, birth region, education, English proficiency, or LLM experience.
+Each characteristic is measured from the original sentence only.
+Each formulation measure describes the simplification.
+Correlations are estimated on the training split (n=186) and checked on the test split (n=90).
+A link is reliable when the two correlations have the same sign and the test p-value is below 0.0025.
+That threshold is 0.05 divided by the number of characteristic-formulation pairs, the Bonferroni correction.
+The identical and unrelated holdouts are not used: their simplifications were constructed, not written from the source sentence.
+
+Characteristic           Formulation                 train r   test r   test p   reliable
+source_words             simplification_words          0.752    0.849   <0.001        yes
+source_words             simplification_sentences      0.243    0.664   <0.001        yes
+source_words             words_kept                   -0.537   -0.467   <0.001        yes
+source_words             shorter_words                -0.060   -0.009    0.933         no
+source_sentences         simplification_words          0.379    0.455   <0.001        yes
+source_sentences         simplification_sentences      0.646    0.886   <0.001        yes
+source_sentences         words_kept                   -0.302   -0.271    0.010         no
+source_sentences         shorter_words                 0.098    0.152    0.152         no
+source_word_length       simplification_words         -0.170   -0.293    0.005         no
+source_word_length       simplification_sentences     -0.160   -0.072    0.502         no
+source_word_length       words_kept                    0.011    0.214    0.043         no
+source_word_length       shorter_words                 0.279    0.285    0.007         no
+source_long_word_share   simplification_words         -0.067   -0.311    0.003         no
+source_long_word_share   simplification_sentences     -0.076   -0.108    0.313         no
+source_long_word_share   words_kept                   -0.011    0.257    0.014         no
+source_long_word_share   shorter_words                 0.259    0.244    0.021         no
+source_comma_rate        simplification_words          0.168    0.264    0.012         no
+source_comma_rate        simplification_sentences     -0.134   -0.100    0.350         no
+source_comma_rate        words_kept                   -0.046   -0.120    0.261         no
+source_comma_rate        shorter_words                -0.130   -0.249    0.018         no
+
+Reliable links: 5 of 20.
+  A higher source_words goes with a higher simplification_words (test r 0.849, p <0.001).
+  A higher source_words goes with a higher simplification_sentences (test r 0.664, p <0.001).
+  A higher source_words goes with a lower words_kept (test r -0.467, p <0.001).
+  A higher source_sentences goes with a higher simplification_words (test r 0.455, p <0.001).
+  A higher source_sentences goes with a higher simplification_sentences (test r 0.886, p <0.001).
+
+RQ2 official evaluation
+
+Protocol
+The ridge model is trained only on the train split of datastore/frjudge.csv.
+Dev, test, and both holdouts are scored after training.
+The identical holdout is the original sentence copied as its own simplification, so every human label is 10.
+The unrelated holdout pairs each original with an unrelated simplification, so every human label is 0.
+Correlation is undefined when the human labels do not vary. Error is the measure on those holdouts.
+
+Trained ridge model
+System                    n  miss    MAE          95% CI   RMSE       r       p
+Test                     90     0   1.57  [1.35, 1.82]   1.95   0.626  <0.001
+Dev check                21     0   1.73  [1.34, 2.11]   1.97   0.728  <0.001
+Identical holdout       297     0   1.21  [1.21, 1.21]   1.21     n/a     n/a
+Unrelated holdout       297     0   5.32  [5.09, 5.55]   5.69     n/a     n/a
+
+Feature weights
+  jaccard                1.123
+  coverage               1.630
+  precision             -1.192
+  length_ratio           4.493
+  simp/orig length       0.857
+  intercept              1.878
+
+On the holdouts, the trained model predicts 8.79 for an identical pair and 5.32 for an unrelated pair. The human labels are 10 and 0.
+Every identical pair has the same overlap features, so the model assigns them one score and the error interval is a single number.
+The unrelated error stays large because shared words still produce a mid-scale score. The model ranks identical pairs above unrelated pairs, and it does not push unrelated pairs down to 0.
+
+Prompt comparison on the official test split
+Judge: Qwen/Qwen2.5-0.5B-Instruct
+Each test pair is scored once with each judge prompt. Only the prompt text changes.
+A reply with no integer from 0 to 10 is missing and is left out of that row's error.
+System                    n  miss    MAE          95% CI   RMSE       r       p
+Short French             90     0   2.39  [2.01, 2.79]   3.04   0.315   0.003
+Short English            90     0   2.43  [2.03, 2.86]   3.12   0.124   0.244
+Long French              90     0   2.46  [2.11, 2.82]   3.02     n/a     n/a
+Ridge on these rows      90     0   1.57  [1.35, 1.82]   1.95   0.626  <0.001
+
+Lowest test error among reliable prompts: Short French (MAE 2.39, 95% CI [2.01, 2.79], Pearson 0.315).
+The Short French and Short English error intervals overlap, so this test run does not separate them.
+The Short French and Long French error intervals overlap, so this test run does not separate them.
+The trained ridge model has a lower test error than every reliable prompt.
+
+Highest test label
+  label=10.0
+  ridge=7.83
+  original: Est inopposable à l’Assuré la clause qui suspend, en tout ou en partie, l’exécution du contrat en cas de pluralité d’assurances.
+  simplification: La clause qui suspend totalement ou partiellement l'exécution du contrat quand il y a plusieurs assurances ne peut pas être opposée à l'Assuré.
+  Short French: 7
+  Short English: 3
+  Long French: 8
+
+Lowest test label
+  label=1.0
+  ridge=4.37
+  original: Résiliation faite après 60 jours Plus de 60 jours après la prise d’effet du contrat d’assurance, l’assureur peut résilier le contrat d’assurance uniquement dans l’une des situations suivantes : il y a eu une aggravation des risques de nature à influencer sensiblement un assureur raisonnable dans sa décision de maintenir le contrat d’assurance; la prime d’assurance n’a pas été payée. L’assureur doit alors envoyer un avis écrit à chacun des assurés désignés ou à leur mandataire. La résiliation prend effet, selon le cas : 30 jours après la réception de l’avis par chacun des assurés désignés ou par leur mandataire, à leur dernière adresse connue; 15 jours après la réception de l’avis par chacun des assurés désignés ou par leur mandataire, à leur dernière adresse connue, si le véhicule désigné est un véhicule visé par le titre VIII.I du Code de la sécurité routière et qu’il n’est pas un autobus scolaire.
+  simplification: La résiliation du contrat d'assurance peut se faire plus de 60 jours après sa prise d'effet, mais seulement dans deux cas. Le premier cas est une aggravation significative des risques. Le deuxième cas est le non-paiement de la prime. L'assureur doit informer par écrit chaque assuré concerné. La résiliation est effective 30 jours après que l'assuré reçoit cet avis. Si le contrat conc
+  Short French: 1
+  Short English: 3
+  Long French: 8
+
+RQ3 official evaluation
+
+Protocol
+Rows are read from datastore/frjudge.csv.
+Each trait is measured from the original sentence and its simplification.
+The same pair always produces the same trait value.
+Correlation with the human rating is estimated on the training split (n=186) and checked on the test split (n=90).
+A trait is reliable when three things hold: the identical holdout sits on the expected side of the unrelated holdout,
+the training and test correlations have the same sign, and the test correlation has p < 0.05.
+This dataset has no user search logs. The traits describe how a legal sentence was simplified.
+
+Trait                   train r   test r   test p  identical  unrelated   reliable
+overlap                   0.335    0.391   <0.001       1.00       0.11        yes
+words_kept                0.408    0.466   <0.001       1.00       0.22        yes
+words_from_original       0.058    0.091    0.394       1.00       0.25         no
+length_closeness          0.531    0.626   <0.001       1.00       0.42        yes
+length_change             0.430    0.585   <0.001       1.00       1.73        yes
+sentence_split            0.159    0.177    0.095       1.00       0.97         no
+shorter_words             0.087    0.046    0.666       0.00      -0.14         no
+
+Reliable traits: 4 of 7.
+Reliable: overlap, words_kept, length_closeness, length_change.
+
+What each trait measures
+  overlap: Share of words that appear in both texts.
+  words_kept: Share of original words that remain in the simplification.
+  words_from_original: Share of simplification words that come from the original.
+  length_closeness: 1 when the two texts have the same number of words, lower when one is much longer.
+  length_change: Simplification length divided by original length. 1 means no change.
+  sentence_split: Simplification sentences divided by original sentences. Above 1 means the sentence was split.
+  shorter_words: Average original word length minus average simplification word length.
+
+Kaggle legal-clause check
+
+Protocol
+Rows are read from datastore/kaggle_legal_simplification.csv.
+Source dataset: Kaggle karthikrv1107/adaption-legal-clause-simplification (MIT license).
+The CSV is built from the public Hugging Face copy of that dataset, Karthikrv/adaption-legal-clause-simplification.
+Each kept row stores an English clause and a plain-language restatement.
+Upstream records with both fields: 6902. Records with no source clause, left out: 1161.
+The table has no human rating from 0 to 10. The ridge model and the judge prompts stay on datastore/frjudge.csv.
+The dataset publishes no train or test split. This check holds out 20 percent of the kept rows with a fixed shuffle, seed 0.
+Correlations are estimated on the training rows (n=5522) and checked on the held-out rows (n=1380).
+A link is reliable when the two correlations have the same sign and the test p-value is below 0.0025.
+That threshold is 0.05 divided by the number of characteristic-formulation pairs, the Bonferroni correction.
+The characteristics and formulation measures are the ones defined for RQ1.
+
+Characteristic           Formulation                 train r   test r   test p   reliable
+source_words             simplification_words          0.082    0.082    0.002        yes
+source_words             simplification_sentences      0.054    0.058    0.032         no
+source_words             words_kept                   -0.231   -0.261   <0.001        yes
+source_words             shorter_words                -0.045   -0.031    0.243         no
+source_sentences         simplification_words          0.062    0.075    0.005         no
+source_sentences         simplification_sentences      0.055    0.058    0.032         no
+source_sentences         words_kept                   -0.243   -0.342   <0.001        yes
+source_sentences         shorter_words                -0.082   -0.111   <0.001        yes
+source_word_length       simplification_words         -0.340   -0.315   <0.001        yes
+source_word_length       simplification_sentences     -0.318   -0.277   <0.001        yes
+source_word_length       words_kept                    0.096    0.056    0.038         no
+source_word_length       shorter_words                 0.491    0.484   <0.001        yes
+source_long_word_share   simplification_words         -0.266   -0.249   <0.001        yes
+source_long_word_share   simplification_sentences     -0.253   -0.223   <0.001        yes
+source_long_word_share   words_kept                    0.061    0.005    0.848         no
+source_long_word_share   shorter_words                 0.447    0.425   <0.001        yes
+source_comma_rate        simplification_words          0.057    0.027    0.315         no
+source_comma_rate        simplification_sentences      0.039    0.017    0.530         no
+source_comma_rate        words_kept                   -0.071   -0.089   <0.001        yes
+source_comma_rate        shorter_words                -0.005   -0.001    0.982         no
+
+Reliable links: 11 of 20.
+  A higher source_words goes with a higher simplification_words (test r 0.082, p 0.002).
+  A higher source_words goes with a lower words_kept (test r -0.261, p <0.001).
+  A higher source_sentences goes with a lower words_kept (test r -0.342, p <0.001).
+  A higher source_sentences goes with a lower shorter_words (test r -0.111, p <0.001).
+  A higher source_word_length goes with a lower simplification_words (test r -0.315, p <0.001).
+  A higher source_word_length goes with a lower simplification_sentences (test r -0.277, p <0.001).
+  A higher source_word_length goes with a higher shorter_words (test r 0.484, p <0.001).
+  A higher source_long_word_share goes with a lower simplification_words (test r -0.249, p <0.001).
+  A higher source_long_word_share goes with a lower simplification_sentences (test r -0.223, p <0.001).
+  A higher source_long_word_share goes with a higher shorter_words (test r 0.425, p <0.001).
+  A higher source_comma_rate goes with a lower words_kept (test r -0.089, p <0.001).
+
+Hindi simplification check
+
+Protocol
+Rows are read from datastore/hindi_simplification.csv.
+Source dataset: Hugging Face raja20221020/hindi-text-simplification-for-finetuning.
+The dataset card lists 12,000 Hindi source sentences and simpler Hindi sentences.
+The dataset card lists no license and no human rating from 0 to 10.
+Each kept row stores the Hindi source as original and the simpler sentence as simplification.
+Upstream records with both fields: 12000. Records left out: 0.
+The ridge model and the judge prompts stay on datastore/frjudge.csv.
+The dataset publishes no train or test split. This check holds out 20 percent of the kept rows with a fixed shuffle, seed 0.
+Correlations are estimated on the training rows (n=9600) and checked on the held-out rows (n=2400).
+A link is reliable when the two correlations have the same sign and the test p-value is below 0.0025.
+That threshold is 0.05 divided by the number of characteristic-formulation pairs, the Bonferroni correction.
+Word counts include Devanagari characters, and sentence counts include the Hindi danda.
+The characteristics and formulation measures are the ones defined for RQ1.
+
+Characteristic           Formulation                 train r   test r   test p   reliable
+source_words             simplification_words          0.442    0.452   <0.001        yes
+source_words             simplification_sentences      0.093    0.112   <0.001        yes
+source_words             words_kept                   -0.307   -0.337   <0.001        yes
+source_words             shorter_words                -0.139   -0.128   <0.001        yes
+source_sentences         simplification_words          0.054    0.139   <0.001        yes
+source_sentences         simplification_sentences      0.224    0.242   <0.001        yes
+source_sentences         words_kept                   -0.110   -0.121   <0.001        yes
+source_sentences         shorter_words                -0.059   -0.060    0.004         no
+source_word_length       simplification_words         -0.133   -0.116   <0.001        yes
+source_word_length       simplification_sentences     -0.013   -0.039    0.053         no
+source_word_length       words_kept                    0.036    0.031    0.125         no
+source_word_length       shorter_words                 0.353    0.325   <0.001        yes
+source_long_word_share   simplification_words         -0.062   -0.053    0.010         no
+source_long_word_share   simplification_sentences      0.011   -0.024    0.232         no
+source_long_word_share   words_kept                    0.004    0.021    0.299         no
+source_long_word_share   shorter_words                 0.232    0.209   <0.001        yes
+source_comma_rate        simplification_words          0.232    0.228   <0.001        yes
+source_comma_rate        simplification_sentences      0.019    0.040    0.049         no
+source_comma_rate        words_kept                   -0.148   -0.150   <0.001        yes
+source_comma_rate        shorter_words                -0.032   -0.002    0.929         no
+
+Reliable links: 12 of 20.
+  A higher source_words goes with a higher simplification_words (test r 0.452, p <0.001).
+  A higher source_words goes with a higher simplification_sentences (test r 0.112, p <0.001).
+  A higher source_words goes with a lower words_kept (test r -0.337, p <0.001).
+  A higher source_words goes with a lower shorter_words (test r -0.128, p <0.001).
+  A higher source_sentences goes with a higher simplification_words (test r 0.139, p <0.001).
+  A higher source_sentences goes with a higher simplification_sentences (test r 0.242, p <0.001).
+  A higher source_sentences goes with a lower words_kept (test r -0.121, p <0.001).
+  A higher source_word_length goes with a lower simplification_words (test r -0.116, p <0.001).
+  A higher source_word_length goes with a higher shorter_words (test r 0.325, p <0.001).
+  A higher source_long_word_share goes with a higher shorter_words (test r 0.209, p <0.001).
+  A higher source_comma_rate goes with a higher simplification_words (test r 0.228, p <0.001).
+  A higher source_comma_rate goes with a lower words_kept (test r -0.150, p <0.001).
+
+Hindi judge on the Hindi dataset
+
+Protocol
+Rows are read from datastore/hindi_simplification.csv.
+The Hindi prompts are applied to Hindi source sentences and Hindi simplifications.
+The table has no human rating from 0 to 10, so this section reports the judge scores and the overlap statistics.
+Overlap statistics use the full test split (n=2400).
+Judge scores use the first 90 test rows. The split itself is the fixed seed-0 holdout.
+Judge: Qwen/Qwen2.5-0.5B-Instruct
+The overlap score is the ridge model trained on the French training rows. It is not a human rating.
+
+Test-split overlap statistics
+  Mean words in the source: 25.52
+  Mean words in the simplification: 20.12
+  Mean share of source words kept: 0.539
+  Mean word overlap: 0.423
+
+Prompt              n  miss   mean   zero distinct  r(kept)        p
+Short Hindi        90     0   0.00     90        1      n/a      n/a
+  scores: 0:90
+Long Hindi         90     0   1.76     67        3    0.042    0.697
+  scores: 0:67, 6:13, 8:10
+
+Mean overlap-model score on these 90 rows: 6.46.
+
+Examples
+
+Lowest share of words kept
+  words_kept=0.12
+  overlap_score=5.07
+  original: इसकी स्थापना सितंबर में डॉ. हरमन ब्रूनो ओटो ब्लूमेनौ ने जर्मन आप्रवासियों के साथ मिलकर की थी।
+  simplification: ब्लूमेनौ ब्राज़ील के सांता कैटरीना राज्य का एक शहर है।
+  Short Hindi: 0
+  Long Hindi: 6
+
+Highest share of words kept
+  words_kept=1.00
+  overlap_score=7.49
+  original: स्टार टोपोलॉजी वाले स्थानीय क्षेत्र नेटवर्क में प्रत्येक नेटवर्क होस्ट एक केंद्रीय हब से जुड़ा होता है।
+  simplification: स्टार टोपोलॉजी वाले स्थानीय क्षेत्र नेटवर्क में प्रत्येक नेटवर्क होस्ट (एलआरबी) उदाहरण के लिए एक पीसी (आरआरबी) एक बिंदु से बिंदु कनेक्शन के साथ एक केंद्रीय हब से जुड़ा होता है।
+  Short Hindi: 0
+  Long Hindi: 0

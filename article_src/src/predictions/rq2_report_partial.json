@@ -1,0 +1,104 @@
+{
+  "test": {
+    "n": 90,
+    "mae": 1.5718298174763967,
+    "rmse": 1.95378471468595,
+    "pearson": 0.6256731775200784,
+    "pearson_p": 4.2994501200346206e-11,
+    "spearman": 0.6149779743598599,
+    "spearman_p": 1.1289984387312005e-10,
+    "mae_low": 1.3484729364496737,
+    "mae_high": 1.8164995237182922,
+    "mean_pred": 6.299513399703197,
+    "mean_label": 6.200000000000001
+  },
+  "dev": {
+    "n": 21,
+    "mae": 1.7279547453445274,
+    "rmse": 1.9654331847771578,
+    "pearson": 0.7276410936650701,
+    "pearson_p": 0.00018522745308803407,
+    "spearman": 0.6532102293979101,
+    "spearman_p": 0.0013242237840625755,
+    "mae_low": 1.3390729980890725,
+    "mae_high": 2.114259522263153,
+    "mean_pred": 5.812185915100304,
+    "mean_label": 5.495238095238094
+  },
+  "holdout_identical": {
+    "n": 297,
+    "mae": 1.210835661546362,
+    "rmse": 1.210835661546362,
+    "pearson": null,
+    "pearson_p": null,
+    "spearman": null,
+    "spearman_p": null,
+    "mae_low": 1.210835661546362,
+    "mae_high": 1.210835661546362,
+    "mean_pred": 8.78916433845364,
+    "mean_label": 10.0
+  },
+  "holdout_unrelated": {
+    "n": 297,
+    "mae": 5.324008644658433,
+    "rmse": 5.689249056862957,
+    "pearson": null,
+    "pearson_p": null,
+    "spearman": null,
+    "spearman_p": null,
+    "mae_low": 5.093416044610744,
+    "mae_high": 5.550027675294508,
+    "mean_pred": 5.324008644658433,
+    "mean_label": 0.0
+  },
+  "prompts": {
+    "short_fr": {
+      "missing": 0,
+      "metrics": {
+        "n": 2,
+        "mae": 1.6,
+        "rmse": 1.6492422502470643,
+        "pearson": null,
+        "pearson_p": null,
+        "spearman": null,
+        "spearman_p": null,
+        "mae_low": 1.2000000000000002,
+        "mae_high": 2.0,
+        "mean_pred": 7.0,
+        "mean_label": 7.4
+      }
+    },
+    "short_en": {
+      "missing": 0,
+      "metrics": {
+        "n": 2,
+        "mae": 3.6,
+        "rmse": 4.326661530556787,
+        "pearson": null,
+        "pearson_p": null,
+        "spearman": null,
+        "spearman_p": null,
+        "mae_low": 1.2000000000000002,
+        "mae_high": 6.0,
+        "mean_pred": 5.0,
+        "mean_label": 7.4
+      }
+    },
+    "long_fr": {
+      "missing": 0,
+      "metrics": {
+        "n": 2,
+        "mae": 1.6,
+        "rmse": 1.7088007490635064,
+        "pearson": null,
+        "pearson_p": null,
+        "spearman": null,
+        "spearman_p": null,
+        "mae_low": 1.0,
+        "mae_high": 2.2,
+        "mean_pred": 8.0,
+        "mean_label": 7.4
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+RQ3 official evaluation
+
+Protocol
+Rows are read from datastore/frjudge.csv.
+Each trait is measured from the original sentence and its simplification.
+The same pair always produces the same trait value.
+Correlation with the human rating is estimated on the training split (n=186) and checked on the test split (n=90).
+A trait is reliable when three things hold: the identical holdout sits on the expected side of the unrelated holdout,
+the training and test correlations have the same sign, and the test correlation has p < 0.05.
+This dataset has no user search logs. The traits describe how a legal sentence was simplified.
+
+Trait                   train r   test r   test p  identical  unrelated   reliable
+overlap                   0.335    0.391   <0.001       1.00       0.11        yes
+words_kept                0.408    0.466   <0.001       1.00       0.22        yes
+words_from_original       0.058    0.091    0.394       1.00       0.25         no
+length_closeness          0.531    0.626   <0.001       1.00       0.42        yes
+length_change             0.430    0.585   <0.001       1.00       1.73        yes
+sentence_split            0.159    0.177    0.095       1.00       0.97         no
+shorter_words             0.087    0.046    0.666       0.00      -0.14         no
+
+Reliable traits: 4 of 7.
+Reliable: overlap, words_kept, length_closeness, length_change.
+
+What each trait measures
+  overlap: Share of words that appear in both texts.
+  words_kept: Share of original words that remain in the simplification.
+  words_from_original: Share of simplification words that come from the original.
+  length_closeness: 1 when the two texts have the same number of words, lower when one is much longer.
+  length_change: Simplification length divided by original length. 1 means no change.
+  sentence_split: Simplification sentences divided by original sentences. Above 1 means the sentence was split.
+  shorter_words: Average original word length minus average simplification word length.

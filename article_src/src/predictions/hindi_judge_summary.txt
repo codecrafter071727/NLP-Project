@@ -1,0 +1,42 @@
+Hindi judge on the Hindi dataset
+
+Protocol
+Rows are read from datastore/hindi_simplification.csv.
+The Hindi prompts are applied to Hindi source sentences and Hindi simplifications.
+The table has no human rating from 0 to 10, so this section reports the judge scores and the overlap statistics.
+Overlap statistics use the full test split (n=2400).
+Judge scores use the first 90 test rows. The split itself is the fixed seed-0 holdout.
+Judge: Qwen/Qwen2.5-0.5B-Instruct
+The overlap score is the ridge model trained on the French training rows. It is not a human rating.
+
+Test-split overlap statistics
+  Mean words in the source: 25.52
+  Mean words in the simplification: 20.12
+  Mean share of source words kept: 0.539
+  Mean word overlap: 0.423
+
+Prompt              n  miss   mean   zero distinct  r(kept)        p
+Short Hindi        90     0   0.00     90        1      n/a      n/a
+  scores: 0:90
+Long Hindi         90     0   1.76     67        3    0.042    0.697
+  scores: 0:67, 6:13, 8:10
+
+Mean overlap-model score on these 90 rows: 6.46.
+
+Examples
+
+Lowest share of words kept
+  words_kept=0.12
+  overlap_score=5.07
+  original: इसकी स्थापना सितंबर में डॉ. हरमन ब्रूनो ओटो ब्लूमेनौ ने जर्मन आप्रवासियों के साथ मिलकर की थी।
+  simplification: ब्लूमेनौ ब्राज़ील के सांता कैटरीना राज्य का एक शहर है।
+  Short Hindi: 0
+  Long Hindi: 6
+
+Highest share of words kept
+  words_kept=1.00
+  overlap_score=7.49
+  original: स्टार टोपोलॉजी वाले स्थानीय क्षेत्र नेटवर्क में प्रत्येक नेटवर्क होस्ट एक केंद्रीय हब से जुड़ा होता है।
+  simplification: स्टार टोपोलॉजी वाले स्थानीय क्षेत्र नेटवर्क में प्रत्येक नेटवर्क होस्ट (एलआरबी) उदाहरण के लिए एक पीसी (आरआरबी) एक बिंदु से बिंदु कनेक्शन के साथ एक केंद्रीय हब से जुड़ा होता है।
+  Short Hindi: 0
+  Long Hindi: 0

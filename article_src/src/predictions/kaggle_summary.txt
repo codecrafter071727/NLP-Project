@@ -1,0 +1,49 @@
+Kaggle legal-clause check
+
+Protocol
+Rows are read from datastore/kaggle_legal_simplification.csv.
+Source dataset: Kaggle karthikrv1107/adaption-legal-clause-simplification (MIT license).
+The CSV is built from the public Hugging Face copy of that dataset, Karthikrv/adaption-legal-clause-simplification.
+Each kept row stores an English clause and a plain-language restatement.
+Upstream records with both fields: 6902. Records with no source clause, left out: 1161.
+The table has no human rating from 0 to 10. The ridge model and the judge prompts stay on datastore/frjudge.csv.
+The dataset publishes no train or test split. This check holds out 20 percent of the kept rows with a fixed shuffle, seed 0.
+Correlations are estimated on the training rows (n=5522) and checked on the held-out rows (n=1380).
+A link is reliable when the two correlations have the same sign and the test p-value is below 0.0025.
+That threshold is 0.05 divided by the number of characteristic-formulation pairs, the Bonferroni correction.
+The characteristics and formulation measures are the ones defined for RQ1.
+
+Characteristic           Formulation                 train r   test r   test p   reliable
+source_words             simplification_words          0.082    0.082    0.002        yes
+source_words             simplification_sentences      0.054    0.058    0.032         no
+source_words             words_kept                   -0.231   -0.261   <0.001        yes
+source_words             shorter_words                -0.045   -0.031    0.243         no
+source_sentences         simplification_words          0.062    0.075    0.005         no
+source_sentences         simplification_sentences      0.055    0.058    0.032         no
+source_sentences         words_kept                   -0.243   -0.342   <0.001        yes
+source_sentences         shorter_words                -0.082   -0.111   <0.001        yes
+source_word_length       simplification_words         -0.340   -0.315   <0.001        yes
+source_word_length       simplification_sentences     -0.318   -0.277   <0.001        yes
+source_word_length       words_kept                    0.096    0.056    0.038         no
+source_word_length       shorter_words                 0.491    0.484   <0.001        yes
+source_long_word_share   simplification_words         -0.266   -0.249   <0.001        yes
+source_long_word_share   simplification_sentences     -0.253   -0.223   <0.001        yes
+source_long_word_share   words_kept                    0.061    0.005    0.848         no
+source_long_word_share   shorter_words                 0.447    0.425   <0.001        yes
+source_comma_rate        simplification_words          0.057    0.027    0.315         no
+source_comma_rate        simplification_sentences      0.039    0.017    0.530         no
+source_comma_rate        words_kept                   -0.071   -0.089   <0.001        yes
+source_comma_rate        shorter_words                -0.005   -0.001    0.982         no
+
+Reliable links: 11 of 20.
+  A higher source_words goes with a higher simplification_words (test r 0.082, p 0.002).
+  A higher source_words goes with a lower words_kept (test r -0.261, p <0.001).
+  A higher source_sentences goes with a lower words_kept (test r -0.342, p <0.001).
+  A higher source_sentences goes with a lower shorter_words (test r -0.111, p <0.001).
+  A higher source_word_length goes with a lower simplification_words (test r -0.315, p <0.001).
+  A higher source_word_length goes with a lower simplification_sentences (test r -0.277, p <0.001).
+  A higher source_word_length goes with a higher shorter_words (test r 0.484, p <0.001).
+  A higher source_long_word_share goes with a lower simplification_words (test r -0.249, p <0.001).
+  A higher source_long_word_share goes with a lower simplification_sentences (test r -0.223, p <0.001).
+  A higher source_long_word_share goes with a higher shorter_words (test r 0.425, p <0.001).
+  A higher source_comma_rate goes with a lower words_kept (test r -0.089, p <0.001).

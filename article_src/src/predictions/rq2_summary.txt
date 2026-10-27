@@ -1,0 +1,60 @@
+RQ2 official evaluation
+
+Protocol
+The ridge model is trained only on the train split of datastore/frjudge.csv.
+Dev, test, and both holdouts are scored after training.
+The identical holdout is the original sentence copied as its own simplification, so every human label is 10.
+The unrelated holdout pairs each original with an unrelated simplification, so every human label is 0.
+Correlation is undefined when the human labels do not vary. Error is the measure on those holdouts.
+
+Trained ridge model
+System                    n  miss    MAE          95% CI   RMSE       r       p
+Test                     90     0   1.57  [1.35, 1.82]   1.95   0.626  <0.001
+Dev check                21     0   1.73  [1.34, 2.11]   1.97   0.728  <0.001
+Identical holdout       297     0   1.21  [1.21, 1.21]   1.21     n/a     n/a
+Unrelated holdout       297     0   5.32  [5.09, 5.55]   5.69     n/a     n/a
+
+Feature weights
+  jaccard                1.123
+  coverage               1.630
+  precision             -1.192
+  length_ratio           4.493
+  simp/orig length       0.857
+  intercept              1.878
+
+On the holdouts, the trained model predicts 8.79 for an identical pair and 5.32 for an unrelated pair. The human labels are 10 and 0.
+Every identical pair has the same overlap features, so the model assigns them one score and the error interval is a single number.
+The unrelated error stays large because shared words still produce a mid-scale score. The model ranks identical pairs above unrelated pairs, and it does not push unrelated pairs down to 0.
+
+Prompt comparison on the official test split
+Judge: Qwen/Qwen2.5-0.5B-Instruct
+Each test pair is scored once with each judge prompt. Only the prompt text changes.
+A reply with no integer from 0 to 10 is missing and is left out of that row's error.
+System                    n  miss    MAE          95% CI   RMSE       r       p
+Short French             90     0   2.39  [2.01, 2.79]   3.04   0.315   0.003
+Short English            90     0   2.43  [2.03, 2.86]   3.12   0.124   0.244
+Long French              90     0   2.46  [2.11, 2.82]   3.02     n/a     n/a
+Ridge on these rows      90     0   1.57  [1.35, 1.82]   1.95   0.626  <0.001
+
+Lowest test error among reliable prompts: Short French (MAE 2.39, 95% CI [2.01, 2.79], Pearson 0.315).
+The Short French and Short English error intervals overlap, so this test run does not separate them.
+The Short French and Long French error intervals overlap, so this test run does not separate them.
+The trained ridge model has a lower test error than every reliable prompt.
+
+Highest test label
+  label=10.0
+  ridge=7.83
+  original: Est inopposable à l’Assuré la clause qui suspend, en tout ou en partie, l’exécution du contrat en cas de pluralité d’assurances.
+  simplification: La clause qui suspend totalement ou partiellement l'exécution du contrat quand il y a plusieurs assurances ne peut pas être opposée à l'Assuré.
+  Short French: 7
+  Short English: 3
+  Long French: 8
+
+Lowest test label
+  label=1.0
+  ridge=4.37
+  original: Résiliation faite après 60 jours Plus de 60 jours après la prise d’effet du contrat d’assurance, l’assureur peut résilier le contrat d’assurance uniquement dans l’une des situations suivantes : il y a eu une aggravation des risques de nature à influencer sensiblement un assureur raisonnable dans sa décision de maintenir le contrat d’assurance; la prime d’assurance n’a pas été payée. L’assureur doit alors envoyer un avis écrit à chacun des assurés désignés ou à leur mandataire. La résiliation prend effet, selon le cas : 30 jours après la réception de l’avis par chacun des assurés désignés ou par leur mandataire, à leur dernière adresse connue; 15 jours après la réception de l’avis par chacun des assurés désignés ou par leur mandataire, à leur dernière adresse connue, si le véhicule désigné est un véhicule visé par le titre VIII.I du Code de la sécurité routière et qu’il n’est pas un autobus scolaire.
+  simplification: La résiliation du contrat d'assurance peut se faire plus de 60 jours après sa prise d'effet, mais seulement dans deux cas. Le premier cas est une aggravation significative des risques. Le deuxième cas est le non-paiement de la prime. L'assureur doit informer par écrit chaque assuré concerné. La résiliation est effective 30 jours après que l'assuré reçoit cet avis. Si le contrat conc
+  Short French: 1
+  Short English: 3
+  Long French: 8

@@ -1,0 +1,52 @@
+Hindi simplification check
+
+Protocol
+Rows are read from datastore/hindi_simplification.csv.
+Source dataset: Hugging Face raja20221020/hindi-text-simplification-for-finetuning.
+The dataset card lists 12,000 Hindi source sentences and simpler Hindi sentences.
+The dataset card lists no license and no human rating from 0 to 10.
+Each kept row stores the Hindi source as original and the simpler sentence as simplification.
+Upstream records with both fields: 12000. Records left out: 0.
+The ridge model and the judge prompts stay on datastore/frjudge.csv.
+The dataset publishes no train or test split. This check holds out 20 percent of the kept rows with a fixed shuffle, seed 0.
+Correlations are estimated on the training rows (n=9600) and checked on the held-out rows (n=2400).
+A link is reliable when the two correlations have the same sign and the test p-value is below 0.0025.
+That threshold is 0.05 divided by the number of characteristic-formulation pairs, the Bonferroni correction.
+Word counts include Devanagari characters, and sentence counts include the Hindi danda.
+The characteristics and formulation measures are the ones defined for RQ1.
+
+Characteristic           Formulation                 train r   test r   test p   reliable
+source_words             simplification_words          0.442    0.452   <0.001        yes
+source_words             simplification_sentences      0.093    0.112   <0.001        yes
+source_words             words_kept                   -0.307   -0.337   <0.001        yes
+source_words             shorter_words                -0.139   -0.128   <0.001        yes
+source_sentences         simplification_words          0.054    0.139   <0.001        yes
+source_sentences         simplification_sentences      0.224    0.242   <0.001        yes
+source_sentences         words_kept                   -0.110   -0.121   <0.001        yes
+source_sentences         shorter_words                -0.059   -0.060    0.004         no
+source_word_length       simplification_words         -0.133   -0.116   <0.001        yes
+source_word_length       simplification_sentences     -0.013   -0.039    0.053         no
+source_word_length       words_kept                    0.036    0.031    0.125         no
+source_word_length       shorter_words                 0.353    0.325   <0.001        yes
+source_long_word_share   simplification_words         -0.062   -0.053    0.010         no
+source_long_word_share   simplification_sentences      0.011   -0.024    0.232         no
+source_long_word_share   words_kept                    0.004    0.021    0.299         no
+source_long_word_share   shorter_words                 0.232    0.209   <0.001        yes
+source_comma_rate        simplification_words          0.232    0.228   <0.001        yes
+source_comma_rate        simplification_sentences      0.019    0.040    0.049         no
+source_comma_rate        words_kept                   -0.148   -0.150   <0.001        yes
+source_comma_rate        shorter_words                -0.032   -0.002    0.929         no
+
+Reliable links: 12 of 20.
+  A higher source_words goes with a higher simplification_words (test r 0.452, p <0.001).
+  A higher source_words goes with a higher simplification_sentences (test r 0.112, p <0.001).
+  A higher source_words goes with a lower words_kept (test r -0.337, p <0.001).
+  A higher source_words goes with a lower shorter_words (test r -0.128, p <0.001).
+  A higher source_sentences goes with a higher simplification_words (test r 0.139, p <0.001).
+  A higher source_sentences goes with a higher simplification_sentences (test r 0.242, p <0.001).
+  A higher source_sentences goes with a lower words_kept (test r -0.121, p <0.001).
+  A higher source_word_length goes with a lower simplification_words (test r -0.116, p <0.001).
+  A higher source_word_length goes with a higher shorter_words (test r 0.325, p <0.001).
+  A higher source_long_word_share goes with a higher shorter_words (test r 0.209, p <0.001).
+  A higher source_comma_rate goes with a higher simplification_words (test r 0.228, p <0.001).
+  A higher source_comma_rate goes with a lower words_kept (test r -0.150, p <0.001).
